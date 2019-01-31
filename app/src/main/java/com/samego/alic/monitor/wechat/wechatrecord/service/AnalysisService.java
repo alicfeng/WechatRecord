@@ -7,16 +7,20 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.blankj.utilcode.util.FileUtils;
+import com.samego.alic.monitor.wechat.wechatrecord.bean.Contact;
 import com.samego.alic.monitor.wechat.wechatrecord.common.Constant;
+import com.samego.alic.monitor.wechat.wechatrecord.common.WechatDatabaseHelper;
+import com.samego.alic.monitor.wechat.wechatrecord.presenter.ContactPresenter;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 
-import java.util.ArrayList;
 
 public class AnalysisService extends Service {
+    private ContactPresenter contactPresenter;
+
     //@androidx.annotation.Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -25,8 +29,9 @@ public class AnalysisService extends Service {
 
     @Override
     public void onCreate() {
+        this.contactPresenter = new ContactPresenter(this);
         this.backup();
-
+        Log.i("alicfeng", "打开数据库成功");
         SQLiteDatabase.loadLibs(this);
 
         SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
@@ -41,25 +46,29 @@ public class AnalysisService extends Service {
             }
         };
 
+
         String file = this.getFilesDir().getPath() + "/analysis.db";
         String password = SharedPreferencesUtil.get(this, "wx_psd", null);
-       try {
+        Log.i("alicfeng", password + "----" + file);
+        try {
             SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(file, password, null, hook);
-            Log.i("alicfeng", "打开数据库成功");
-           Cursor cursor = database.rawQuery("select value from userinfo",null);
-          // Cursor cursor = database.query("userinfo", new String[]{"value"}, null, null, null, null, null);
-           //利用游标遍历所有数据对象
-           while(cursor.moveToNext()) {
-               String value = cursor.getString(cursor.getColumnIndex("value"));
-               Log.i("alicfeng", value);
-           }
+            Cursor cursor = database.rawQuery("PRAGMA table_info(userinfo);", null);
+            Log.i("alicfeng", "execute this " + cursor.getCount());
+            while (cursor.moveToNext()) {
+                Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("name")));
+                Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("type")));
+            }
+            Log.i("alicfeng", "execute this two");
             cursor.close();
+            database.close();
         } catch (Exception e) {
             Log.e("alicfeng", e.getMessage());
+            e.printStackTrace();
             Log.e("alicfeng", "打开数据库失败");
         }
 
 
+        contactPresenter.getContactList();
     }
 
     @Override

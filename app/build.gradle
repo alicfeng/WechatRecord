@@ -26,10 +26,10 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.11.2'
     implementation 'com.blankj:utilcode:1.23.2'
     implementation  'net.zetetic:android-database-sqlcipher:3.5.9'
+    implementation 'com.tencent.wcdb:room:1.0.8'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
     mavenCentral()
