@@ -27,6 +27,7 @@ dependencies {
     implementation 'com.blankj:utilcode:1.23.2'
     implementation  'net.zetetic:android-database-sqlcipher:3.5.9'
     implementation 'com.tencent.wcdb:room:1.0.8'
+    implementation 'com.squareup.okhttp3:okhttp:3.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

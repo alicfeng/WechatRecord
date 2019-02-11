@@ -7,9 +7,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.samego.alic.monitor.wechat.wechatrecord.bean.Contact;
 import com.samego.alic.monitor.wechat.wechatrecord.common.Constant;
-import com.samego.alic.monitor.wechat.wechatrecord.common.WechatDatabaseHelper;
+import com.samego.alic.monitor.wechat.wechatrecord.presenter.AccountPresenter;
+import com.samego.alic.monitor.wechat.wechatrecord.presenter.ChatRecordPresenter;
 import com.samego.alic.monitor.wechat.wechatrecord.presenter.ContactPresenter;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 
@@ -17,9 +17,14 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class AnalysisService extends Service {
     private ContactPresenter contactPresenter;
+    private AccountPresenter accountPresenter;
+    private ChatRecordPresenter chatRecordPresenter;
 
     //@androidx.annotation.Nullable
     @Override
@@ -30,6 +35,8 @@ public class AnalysisService extends Service {
     @Override
     public void onCreate() {
         this.contactPresenter = new ContactPresenter(this);
+        this.accountPresenter = new AccountPresenter(this);
+        this.chatRecordPresenter = new ChatRecordPresenter(this);
         this.backup();
         Log.i("alicfeng", "打开数据库成功");
         SQLiteDatabase.loadLibs(this);
@@ -52,7 +59,7 @@ public class AnalysisService extends Service {
         Log.i("alicfeng", password + "----" + file);
         try {
             SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(file, password, null, hook);
-            Cursor cursor = database.rawQuery("PRAGMA table_info(userinfo);", null);
+            Cursor cursor = database.rawQuery("PRAGMA table_info(message);", null);
             Log.i("alicfeng", "execute this " + cursor.getCount());
             while (cursor.moveToNext()) {
                 Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("name")));
@@ -67,8 +74,7 @@ public class AnalysisService extends Service {
             Log.e("alicfeng", "打开数据库失败");
         }
 
-
-        contactPresenter.getContactList();
+        syncTimer();
     }
 
     @Override
@@ -88,5 +94,23 @@ public class AnalysisService extends Service {
         String sourcePath = SharedPreferencesUtil.get(this, Constant.SP_WECHAT_DB_NAME, null);
         String targetPath = this.getFilesDir().getPath() + "/analysis.db";
         FileUtils.copyFile(sourcePath, targetPath);
+    }
+
+
+    /**
+     * 计划定时器
+     * 服务于同步助手
+     */
+    private void syncTimer(){
+        Timer timer = new Timer(true);
+        TimerTask task = new TimerTask() {
+            public void run() {
+                backup();
+                accountPresenter.syncAccount();
+                contactPresenter.syncContactList();
+                chatRecordPresenter.syncChatRecord();
+            }
+        };
+        timer.schedule(task, 0, 1000*10);
     }
 }

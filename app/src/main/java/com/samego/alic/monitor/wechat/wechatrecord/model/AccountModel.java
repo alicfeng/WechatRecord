@@ -24,5 +24,5 @@ public interface AccountModel {
      * @param context 上下文
      * @param account 账号信息
      */
-    void syncContactMessage(Context context, Account account);
+    void syncAccountMessage(Context context, Account account);
 }

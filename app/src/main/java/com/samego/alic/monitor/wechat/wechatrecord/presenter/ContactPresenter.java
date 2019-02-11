@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.samego.alic.monitor.wechat.wechatrecord.bean.Contact;
 import com.samego.alic.monitor.wechat.wechatrecord.model.ContactModel;
@@ -23,23 +24,19 @@ public class ContactPresenter {
         this.handler = new Handler(Looper.getMainLooper());
     }
 
-    public void getContactList() {
+    public void syncContactList() {
         handler.post(new Runnable() {
             @Override
             public void run() {
                 contactModel.getContactList(context, new OnGetContactListener() {
                     @Override
                     public void successful(List<Contact> contacts) {
-                        for (Contact contact : contacts) {
-                            Log.i("alicfeng", contact.getNickname());
-                            Log.i("alicfeng", contact.getUsername());
-                            Log.i("alicfeng", contact.getType());
-                        }
+                        contactModel.syncContactMessage(context,contacts);
                     }
 
                     @Override
                     public void fail() {
-
+                        Toast.makeText(context,"getContactList failed",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
