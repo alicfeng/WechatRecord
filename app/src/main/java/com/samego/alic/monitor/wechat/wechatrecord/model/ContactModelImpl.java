@@ -10,6 +10,7 @@ import com.samego.alic.monitor.wechat.wechatrecord.bean.RequestStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ResponseStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.common.ResponseCode;
 import com.samego.alic.monitor.wechat.wechatrecord.common.URI;
+import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetContactListener;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.OkHttpManager;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
@@ -17,7 +18,6 @@ import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,21 +35,7 @@ public class ContactModelImpl implements ContactModel {
     @Override
     public void getContactList(Context context, OnGetContactListener listener) {
         try {
-            SQLiteDatabase.loadLibs(context);
-            SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
-                @Override
-                public void preKey(SQLiteDatabase database) {
-
-                }
-
-                @Override
-                public void postKey(SQLiteDatabase database) {
-                    database.rawExecSQL("PRAGMA cipher_migrate;"); // 兼容2.0的数据库
-                }
-            };
-            String file = context.getFilesDir().getPath() + "/analysis.db";
-            String password = SharedPreferencesUtil.get(context, "wx_psd", null);
-            SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(file, password, null, hook);
+            SQLiteDatabase database = WechatDatabaseHelper.connect(context);
             List<Contact> contactList = new ArrayList<>();
             // verifyFlag!=0：公众号等类型 type=33：微信功能 type=2：未知 type=4：非好友
             // 一般公众号原始ID开头都是gh_
@@ -61,7 +47,7 @@ public class ContactModelImpl implements ContactModel {
                     "type != ? and " +
                     "verifyFlag = ? and " +
                     "username not like 'gh_%' and " +
-                    "username not like '%@chatroom';", new String[]{"2", "33", "4","0", "0"});
+                    "username not like '%@chatroom';", new String[]{"2", "33", "4", "0", "0"});
             while (cursor.moveToNext()) {
                 Contact contact = new Contact();
                 contact.setUsername(cursor.getString(cursor.getColumnIndex("username")));
@@ -69,8 +55,7 @@ public class ContactModelImpl implements ContactModel {
                 contact.setType(cursor.getString(cursor.getColumnIndex("type")));
                 contactList.add(contact);
             }
-            cursor.close();
-            database.close();
+            WechatDatabaseHelper.close(database, cursor);
             listener.successful(contactList);
         } catch (SQLException e) {
             Log.e("alicfeng", e.getMessage());
@@ -91,10 +76,10 @@ public class ContactModelImpl implements ContactModel {
 
         // 主体body
         Map<String, Object> body = new HashMap<>();
-       List message = new ArrayList();
+        List message = new ArrayList();
 
         for (Contact contact : contactList) {
-            Map<String,String> item = new HashMap<>();
+            Map<String, String> item = new HashMap<>();
             item.put("nickname", contact.getNickname());
             item.put("username", contact.getUsername());
             item.put("type", contact.getType());
@@ -103,7 +88,7 @@ public class ContactModelImpl implements ContactModel {
 
         body.put("type", URI.INTERFACE_SIGN_CONTACT);
         body.put("username", username);
-        body.put("message",message);
+        body.put("message", message);
 
         RequestStructure structure = new RequestStructure();
         structure.setHeader(header);

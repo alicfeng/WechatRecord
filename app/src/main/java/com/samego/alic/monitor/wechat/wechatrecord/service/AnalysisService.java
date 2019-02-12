@@ -4,24 +4,22 @@ package com.samego.alic.monitor.wechat.wechatrecord.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.blankj.utilcode.util.FileUtils;
+import com.samego.alic.monitor.wechat.wechatrecord.common.AppCore;
 import com.samego.alic.monitor.wechat.wechatrecord.common.Constant;
 import com.samego.alic.monitor.wechat.wechatrecord.presenter.AccountPresenter;
 import com.samego.alic.monitor.wechat.wechatrecord.presenter.ChatRecordPresenter;
 import com.samego.alic.monitor.wechat.wechatrecord.presenter.ContactPresenter;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
-
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
+import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class AnalysisService extends Service {
+public class AnalysisService extends Service implements AnalysisServiceView {
     private ContactPresenter contactPresenter;
     private AccountPresenter accountPresenter;
     private ChatRecordPresenter chatRecordPresenter;
@@ -34,47 +32,21 @@ public class AnalysisService extends Service {
 
     @Override
     public void onCreate() {
-        this.contactPresenter = new ContactPresenter(this);
-        this.accountPresenter = new AccountPresenter(this);
-        this.chatRecordPresenter = new ChatRecordPresenter(this);
-        this.backup();
-        Log.i("alicfeng", "打开数据库成功");
-        SQLiteDatabase.loadLibs(this);
+        this.init();
+        this.syncTimer();
 
-        SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
-            @Override
-            public void preKey(SQLiteDatabase database) {
-
-            }
-
-            @Override
-            public void postKey(SQLiteDatabase database) {
-                database.rawExecSQL("PRAGMA cipher_migrate;"); // 兼容2.0的数据库
-            }
-        };
-
-
-        String file = this.getFilesDir().getPath() + "/analysis.db";
-        String password = SharedPreferencesUtil.get(this, "wx_psd", null);
-        Log.i("alicfeng", password + "----" + file);
-        try {
-            SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(file, password, null, hook);
-            Cursor cursor = database.rawQuery("PRAGMA table_info(message);", null);
-            Log.i("alicfeng", "execute this " + cursor.getCount());
-            while (cursor.moveToNext()) {
-                Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("name")));
-                Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("type")));
-            }
-            Log.i("alicfeng", "execute this two");
-            cursor.close();
-            database.close();
-        } catch (Exception e) {
-            Log.e("alicfeng", e.getMessage());
-            e.printStackTrace();
-            Log.e("alicfeng", "打开数据库失败");
-        }
-
-        syncTimer();
+//        try {
+//            SQLiteDatabase database = WechatDatabaseHelper.connect(this);
+//            Cursor cursor = database.rawQuery("PRAGMA table_info(ImgInfo2);", null);
+//            while (cursor.moveToNext()) {
+//                Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("name")));
+//                Log.i("alicfeng", cursor.getString(cursor.getColumnIndex("type")));
+//            }
+//
+//            WechatDatabaseHelper.close(database,cursor);
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
     }
 
     @Override
@@ -93,6 +65,9 @@ public class AnalysisService extends Service {
     public void backup() {
         String sourcePath = SharedPreferencesUtil.get(this, Constant.SP_WECHAT_DB_NAME, null);
         String targetPath = this.getFilesDir().getPath() + "/analysis.db";
+        if (FileUtils.isFileExists(targetPath)) {
+            FileUtils.delete(targetPath);
+        }
         FileUtils.copyFile(sourcePath, targetPath);
     }
 
@@ -101,7 +76,7 @@ public class AnalysisService extends Service {
      * 计划定时器
      * 服务于同步助手
      */
-    private void syncTimer(){
+    private void syncTimer() {
         Timer timer = new Timer(true);
         TimerTask task = new TimerTask() {
             public void run() {
@@ -111,6 +86,24 @@ public class AnalysisService extends Service {
                 chatRecordPresenter.syncChatRecord();
             }
         };
-        timer.schedule(task, 0, 1000*10);
+        timer.schedule(task, 0, AppCore.SYNC_FREQUENCY);
+    }
+
+    @Override
+    public void starting() {
+        TastyToast.makeText(this, "Analysis服务正在启动", TastyToast.LENGTH_LONG, TastyToast.INFO).show();
+    }
+
+    @Override
+    public void networkUnavailability() {
+        TastyToast.makeText(this, "请连接网络", TastyToast.LENGTH_LONG, TastyToast.WARNING).show();
+    }
+
+    @Override
+    public void init() {
+        this.contactPresenter = new ContactPresenter(this, this);
+        this.accountPresenter = new AccountPresenter(this, this);
+        this.chatRecordPresenter = new ChatRecordPresenter(this, this);
+        this.starting();
     }
 }

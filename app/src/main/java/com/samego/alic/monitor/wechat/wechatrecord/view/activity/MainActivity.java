@@ -1,18 +1,14 @@
 package com.samego.alic.monitor.wechat.wechatrecord.view.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.samego.alic.monitor.wechat.wechatrecord.R;
 import com.samego.alic.monitor.wechat.wechatrecord.common.AppCore;
-import com.samego.alic.monitor.wechat.wechatrecord.configure.WechatPackage;
 import com.samego.alic.monitor.wechat.wechatrecord.service.AnalysisService;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
-import com.samego.alic.monitor.wechat.wechatrecord.utils.SystemUtil;
 
 public class MainActivity extends AppCompatActivity {
     private Intent intent;

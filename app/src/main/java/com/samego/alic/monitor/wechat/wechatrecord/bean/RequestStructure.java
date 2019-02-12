@@ -2,6 +2,9 @@ package com.samego.alic.monitor.wechat.wechatrecord.bean;
 
 import java.util.Map;
 
+/**
+ * 报文请求主体bean
+ */
 public class RequestStructure {
     private Map header;
     private Map body;

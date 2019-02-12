@@ -5,6 +5,8 @@ import android.content.Context;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ChatRecord;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetChatRecordListener;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
 import java.util.List;
 
 public interface ChatRecordModel {
@@ -19,8 +21,18 @@ public interface ChatRecordModel {
     /**
      * 上传同步账号信息
      *
-     * @param context 上下文
+     * @param context        上下文
      * @param chatRecordList 聊天记录信息
      */
-    void syncChatRecordMessage(Context context,List<ChatRecord> chatRecordList);
+    void syncChatRecordMessage(Context context, List<ChatRecord> chatRecordList);
+
+
+    /**
+     * 读取图片文件信息根据msgSvrId
+     *
+     * @param database db
+     * @param msgSvrId msgSvrId
+     * @return String 图片文件信息
+     */
+    String imagePath(SQLiteDatabase database, String msgSvrId);
 }

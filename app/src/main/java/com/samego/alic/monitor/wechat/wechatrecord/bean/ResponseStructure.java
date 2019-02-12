@@ -2,6 +2,9 @@ package com.samego.alic.monitor.wechat.wechatrecord.bean;
 
 import java.io.Serializable;
 
+/**
+ * 报文接收主体bean
+ */
 public class ResponseStructure implements Serializable {
     private String resultCode;
     private String message;

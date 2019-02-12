@@ -10,6 +10,7 @@ import com.samego.alic.monitor.wechat.wechatrecord.bean.RequestStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ResponseStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.common.ResponseCode;
 import com.samego.alic.monitor.wechat.wechatrecord.common.URI;
+import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetAccountListener;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.OkHttpManager;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
@@ -17,11 +18,8 @@ import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,21 +33,7 @@ public class AccountModelImpl implements AccountModel {
     @Override
     public void getAccount(Context context, OnGetAccountListener listener) {
         try {
-            SQLiteDatabase.loadLibs(context);
-            SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
-                @Override
-                public void preKey(SQLiteDatabase database) {
-
-                }
-
-                @Override
-                public void postKey(SQLiteDatabase database) {
-                    database.rawExecSQL("PRAGMA cipher_migrate;"); // 兼容2.0的数据库
-                }
-            };
-            String file = context.getFilesDir().getPath() + "/analysis.db";
-            String password = SharedPreferencesUtil.get(context, "wx_psd", null);
-            SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(file, password, null, hook);
+            SQLiteDatabase database = WechatDatabaseHelper.connect(context);
             Account account = new Account();
             String[] binds = new String[]{"2", "4"};
             String[] accountValue = new String[2];
@@ -60,8 +44,7 @@ public class AccountModelImpl implements AccountModel {
             }
             account.setUsername(accountValue[0]);
             account.setNickname(accountValue[1]);
-            cursor.close();
-            database.close();
+            WechatDatabaseHelper.close(database, cursor);
             listener.successful(account);
         } catch (SQLException e) {
             Log.e("alicfeng", e.getMessage());
@@ -79,7 +62,7 @@ public class AccountModelImpl implements AccountModel {
         Map<String, Object> body = new HashMap<>();
         Map<String, Object> message = new HashMap<>();
         message.put("nickname", account.getNickname());
-        body.put("type", 1);
+        body.put("type", URI.INTERFACE_SIGN_ACCOUNT);
         body.put("username", account.getUsername());
         body.put("message", message);
 
@@ -100,7 +83,6 @@ public class AccountModelImpl implements AccountModel {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
-                Log.i("alicfeng", result);
                 ResponseStructure responseStructure = gson.fromJson(result, new TypeToken<ResponseStructure>() {
                 }.getType());
                 if (ResponseCode.SUCCESS.equals(responseStructure.getResultCode())) {
@@ -108,32 +90,5 @@ public class AccountModelImpl implements AccountModel {
                 }
             }
         });
-    }
-
-    public static void main(String[] args) {
-        System.out.println("f");
-        Account account = new Account();
-        account.setUsername("ff");
-        account.setNickname("gg");
-        // 头部header
-        Map<String, Object> header = new HashMap<>();
-        header.put("companyId", "tsb");
-
-        // 主体body
-        Map<String, Object> body = new HashMap<>();
-        Map<String, Object> message = new HashMap<>();
-        message.put("nickname", account.getNickname());
-        body.put("type", 1);
-        body.put("username", account.getUsername());
-        body.put("message", message);
-
-        RequestStructure structure = new RequestStructure();
-        structure.setHeader(header);
-        structure.setBody(body);
-        Gson gson = new Gson();
-        String json = gson.toJson(structure);
-        System.out.println(json);
-
-
     }
 }

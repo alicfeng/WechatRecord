@@ -2,11 +2,14 @@ package com.samego.alic.monitor.wechat.wechatrecord.common;
 
 import android.content.Context;
 
-import com.samego.alic.monitor.wechat.wechatrecord.configure.WechatPackage;
+import com.samego.alic.monitor.wechat.wechatrecord.libs.WechatPackage;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SystemUtil;
 
 public class AppCore {
+    // 同步频率(ms)
+    public static final int SYNC_FREQUENCY = 1000 * 10;
+
     /**
      * 初始化核心配置
      *
@@ -15,8 +18,8 @@ public class AppCore {
      */
     public static boolean initCoreConfigure(Context context) {
         String imei = SystemUtil.imei(context);
-        String uid = WechatPackage.uid(context);
-        String dbPath = WechatPackage.getDBFilePath(context,uid);
+        String uid = WechatPackage.uid();
+        String dbPath = WechatPackage.getDBFilePath(context, uid);
         if (null == imei || null == uid) {
             return false;
         }

@@ -8,6 +8,7 @@ import com.samego.alic.monitor.wechat.wechatrecord.bean.ChatRecord;
 import com.samego.alic.monitor.wechat.wechatrecord.model.ChatRecordModel;
 import com.samego.alic.monitor.wechat.wechatrecord.model.ChatRecordModelImpl;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetChatRecordListener;
+import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView;
 
 import java.util.List;
 
@@ -15,11 +16,13 @@ public class ChatRecordPresenter {
     private Context context;
     private ChatRecordModel chatRecordModel;
     private Handler handler;
+    private AnalysisServiceView analysisServiceView;
 
-    public ChatRecordPresenter(Context context) {
+    public ChatRecordPresenter(Context context, AnalysisServiceView analysisServiceView) {
         this.context = context;
         this.chatRecordModel = new ChatRecordModelImpl();
         this.handler = new Handler(Looper.getMainLooper());
+        this.analysisServiceView = analysisServiceView;
     }
 
     public void syncChatRecord() {

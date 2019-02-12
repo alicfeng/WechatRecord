@@ -1,14 +1,23 @@
 package com.samego.alic.monitor.wechat.wechatrecord.bean;
 
+/**
+ * 聊天记录bean
+ */
 public class ChatRecord {
+    // 信息ID
     private String msgSvrId;
+    // 信息的类型
     private String type;
+    // 是否发送的信息 1发送 0接收
     private String isSend;
-    private Long createTime;
+    // 信息的创建时间戳 ms
+    private String createTime;
+    // 对话者
     private String talker;
+    // 聊天内容
     private String content;
 
-    public ChatRecord(){
+    public ChatRecord() {
 
     }
 
@@ -36,11 +45,11 @@ public class ChatRecord {
         this.isSend = isSend;
     }
 
-    public Long getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Long createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 

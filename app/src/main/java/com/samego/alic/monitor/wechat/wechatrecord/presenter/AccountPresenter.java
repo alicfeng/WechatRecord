@@ -9,17 +9,21 @@ import com.samego.alic.monitor.wechat.wechatrecord.bean.Account;
 import com.samego.alic.monitor.wechat.wechatrecord.model.AccountModel;
 import com.samego.alic.monitor.wechat.wechatrecord.model.AccountModelImpl;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetAccountListener;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.NetWorkUtils;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
+import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView;
 
 public class AccountPresenter {
     private Context context;
     private AccountModel accountModel;
     private Handler handler;
+    private AnalysisServiceView analysisServiceView;
 
-    public AccountPresenter(Context context) {
+    public AccountPresenter(Context context, AnalysisServiceView analysisServiceView) {
         this.context = context;
         this.accountModel = new AccountModelImpl();
         this.handler = new Handler(Looper.getMainLooper());
+        this.analysisServiceView = analysisServiceView;
     }
 
     public void syncAccount() {
@@ -32,7 +36,11 @@ public class AccountPresenter {
                     accountModel.getAccount(context, new OnGetAccountListener() {
                         @Override
                         public void successful(Account account) {
-                            accountModel.syncAccountMessage(context, account);
+                            if (NetWorkUtils.isNetworkConnected(context)){
+                                accountModel.syncAccountMessage(context, account);
+                            }else {
+                                analysisServiceView.networkUnavailability();
+                            }
                         }
 
                         @Override

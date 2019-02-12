@@ -3,11 +3,7 @@ package com.samego.alic.monitor.wechat.wechatrecord.model;
 import android.content.Context;
 
 import com.samego.alic.monitor.wechat.wechatrecord.bean.Account;
-import com.samego.alic.monitor.wechat.wechatrecord.bean.Contact;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetAccountListener;
-import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetContactListener;
-
-import java.util.List;
 
 public interface AccountModel {
     /**
