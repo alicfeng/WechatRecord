@@ -9,7 +9,7 @@ import com.samego.alic.monitor.wechat.wechatrecord.bean.Account;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.RequestStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ResponseStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.common.ResponseCode;
-import com.samego.alic.monitor.wechat.wechatrecord.common.URI;
+import com.samego.alic.monitor.wechat.wechatrecord.configure.URI;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetAccountListener;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.OkHttpManager;

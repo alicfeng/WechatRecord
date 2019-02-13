@@ -15,4 +15,9 @@ public interface AnalysisServiceView {
      * 初始化相关
      */
     void init();
+
+    /**
+     * 获取数据异常
+     */
+    void getDataFail();
 }

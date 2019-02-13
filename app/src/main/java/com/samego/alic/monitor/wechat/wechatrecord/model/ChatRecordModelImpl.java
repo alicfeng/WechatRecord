@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ChatRecord;
+import com.samego.alic.monitor.wechat.wechatrecord.common.AppCore;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.libs.WechatPackage;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetChatRecordListener;
@@ -26,6 +27,8 @@ public class ChatRecordModelImpl implements ChatRecordModel {
      * "10000" -> content       // 系统提示信息
      * else -> content          // 其他信息，包含红包、转账等
      *
+     * 注意: 图片、语音、小视频为资源文件的绝对路径，其他为字符内容
+     *
      * @param context  上下文
      * @param listener 监听
      */
@@ -35,7 +38,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
             SQLiteDatabase database = WechatDatabaseHelper.connect(context);
             List<ChatRecord> chatRecordList = new ArrayList<>();
             ChatRecord chatRecord = new ChatRecord();
-            String[] binds = new String[]{"1", "3", "34", "47", "50", "43", "49", "0"};
+            String[] binds = new String[]{"1", "3", "34", "47", "50", "43", "49", String.valueOf(AppCore.DATA_TIME)};
             Cursor cursor = database.rawQuery(
                     "select * from message where talker not like 'gh_%' and type in (?,?,?,?,?,?,?) and createTime>?;",
                     binds);

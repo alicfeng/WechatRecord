@@ -1,9 +1,11 @@
 package com.samego.alic.monitor.wechat.wechatrecord.bean;
 
+import java.io.Serializable;
+
 /**
  * 微信账号bean
  */
-public class Account {
+public class Account implements Serializable {
     // 微信id
     private String username;
     // 昵称

@@ -9,6 +9,7 @@ import com.samego.alic.monitor.wechat.wechatrecord.R;
 import com.samego.alic.monitor.wechat.wechatrecord.common.AppCore;
 import com.samego.alic.monitor.wechat.wechatrecord.service.AnalysisService;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.StatusBarCompat;
 
 public class MainActivity extends AppCompatActivity {
     private Intent intent;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(){
+        StatusBarCompat.displayStatusBar(this);
         this.intent = new Intent(this,AnalysisService.class);
     }
 }

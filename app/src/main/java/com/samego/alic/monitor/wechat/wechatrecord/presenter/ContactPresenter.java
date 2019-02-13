@@ -40,6 +40,7 @@ public class ContactPresenter {
                     @Override
                     public void fail() {
                         Toast.makeText(context,"getContactList failed",Toast.LENGTH_SHORT).show();
+                        analysisServiceView.getDataFail();
                     }
                 });
             }

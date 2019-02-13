@@ -1,4 +1,4 @@
-package com.samego.alic.monitor.wechat.wechatrecord.common;
+package com.samego.alic.monitor.wechat.wechatrecord.configure;
 
 public class URI {
     // 基础域

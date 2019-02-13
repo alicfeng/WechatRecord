@@ -1,9 +1,11 @@
 package com.samego.alic.monitor.wechat.wechatrecord.bean;
 
+import java.io.Serializable;
+
 /**
  * 聊天记录bean
  */
-public class ChatRecord {
+public class ChatRecord implements Serializable {
     // 信息ID
     private String msgSvrId;
     // 信息的类型
@@ -14,7 +16,7 @@ public class ChatRecord {
     private String createTime;
     // 对话者
     private String talker;
-    // 聊天内容
+    // 聊天内容  图片、语音、小视频为资源文件的绝对路径，其他为字符内容
     private String content;
 
     public ChatRecord() {
