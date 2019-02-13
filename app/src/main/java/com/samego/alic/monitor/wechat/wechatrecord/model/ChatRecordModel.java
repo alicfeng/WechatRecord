@@ -35,4 +35,13 @@ public interface ChatRecordModel {
      * @return String 图片文件信息
      */
     String imagePath(SQLiteDatabase database, String msgSvrId);
+
+    /**
+     * 获取资源文件对应的地址
+     *
+     * @param context 上下文
+     * @param msgSvrId 消息的id
+     * @return 资源文件对应的地址
+     */
+    String resourceLink(Context context, String msgSvrId);
 }

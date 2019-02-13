@@ -34,7 +34,7 @@ public class WechatDatabaseHelper {
      * @param database 数据库句柄
      */
     public static void close(SQLiteDatabase database) {
-        if (database.isOpen()) {
+        if (database != null && database.isOpen()) {
             database.close();
         }
     }
@@ -46,10 +46,10 @@ public class WechatDatabaseHelper {
      * @param cursor   cursor句柄
      */
     public static void close(SQLiteDatabase database, Cursor cursor) {
-        if (!cursor.isClosed()) {
+        if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
-        if (database.isOpen()) {
+        if (database != null && database.isOpen()) {
             database.close();
         }
     }

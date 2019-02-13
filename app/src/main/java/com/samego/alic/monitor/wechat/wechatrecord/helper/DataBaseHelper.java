@@ -23,22 +23,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TN.MESSAGE_UPLOAD_RECORD + "(" +
-                "uuid INTEGER NOT NULL PRIMARY KEY," +
-                "nickname VARCHAR(15)," +
-                "sex INTEGER," +
-                "province VARCHAR(15)," +
-                "city VARCHAR(15)," +
-                "headimgurl VARCHAR(150)," +
-                "is_enterprise INTEGER" +
+                "id INTEGER NOT NULL PRIMARY KEY," +
+                "type INTEGER," +
+                "msg_id VARCHAR(32)," +
+                "resource VARCHAR(256)" +
                 ")"
         );
-        DevLog.i("用户数据表已经创建");
-
+        DevLog.i("资源上传记录表新建成功");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        System.out.println("db upgrade");
+        DevLog.i("db upgrade");
     }
 
     /**

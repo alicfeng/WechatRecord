@@ -7,6 +7,8 @@ public class URI {
     // 账号数据同步URI
     public static final String URI_ACCOUNT_SYNC = BASE_DOMAIN + "/platform/chatRecord/sync";
 
+    public static final String URI_FILE_UPLOAD = BASE_DOMAIN + "/platform/file/upload";
+
     // 接口标识
     public static final int INTERFACE_SIGN_ACCOUNT = 1;// 账号同步sign
     public static final int INTERFACE_SIGN_CONTACT = 2;// 联系人同步sign

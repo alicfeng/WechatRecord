@@ -401,7 +401,6 @@ public class OkHttpManager {
                 //过滤 判断key是否为空
                 if (!key.equals("")) {
                     builder.addFormDataPart(key, key, RequestBody.create(MEDIA_TYPE_PNG, files.get(key)));
-                    System.out.println("form- add");
                 }
             }
         }
