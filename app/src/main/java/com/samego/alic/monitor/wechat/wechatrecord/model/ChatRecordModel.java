@@ -39,9 +39,21 @@ public interface ChatRecordModel {
     /**
      * 获取资源文件对应的地址
      *
-     * @param context 上下文
+     * @param context  上下文
+     * @param msgSvrId 消息的id
      * @param msgSvrId 消息的id
      * @return 资源文件对应的地址
      */
-    String resourceLink(Context context, String msgSvrId);
+    String readResourceLink(Context context, String msgSvrId, String type);
+
+    /**
+     * 保存资源文件对应的地址
+     *
+     * @param context  上下文
+     * @param msgSvrId 消息的id
+     * @param link     地址
+     * @param type     类型
+     * @return 资源文件对应的地址
+     */
+    boolean saveResourceLink(Context context, String msgSvrId, String link, String type);
 }

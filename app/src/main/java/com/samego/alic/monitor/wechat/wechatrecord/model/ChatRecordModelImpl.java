@@ -1,5 +1,6 @@
 package com.samego.alic.monitor.wechat.wechatrecord.model;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
@@ -69,26 +70,35 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                 chatRecord.setTalker(cursor.getString(cursor.getColumnIndex("talker")));
 
                 if ((Arrays.asList(rules).contains(chatRecord.getType()))) {
+                    String filePath, link;
                     String resource = cursor.getString(cursor.getColumnIndex("imgPath"));
                     switch (chatRecord.getType()) {
                         // 图片
                         case "3":
-                            String filePath = imagePath(database, chatRecord.getMsgSvrId());
-                            String link = this.resourceLink(context, chatRecord.getMsgSvrId());
+                            DevLog.i("3 - 图片");
+                            filePath = imagePath(database, chatRecord.getMsgSvrId());
+                            DevLog.i("3" + filePath);
+                            link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
+                            DevLog.i("3" + link);
                             // 上传
                             if (null == link) {
-                                DevLog.i("资源文件为空" + chatRecord.getMsgSvrId());
-                                if (null != filePath) {
-                                    DevLog.i("开始上传" + chatRecord.getMsgSvrId());
-                                    this.uploadModel.uploadFile(filePath);
-                                }
+                                DevLog.i("3 - 异常被注销");
+                                chatRecord = null;
+                                break;
                             }
                             chatRecord.setContent(link);
                             break;
 
                         // 语音
                         case "34":
-                            chatRecord.setContent(WechatPackage.voicePath(resource));
+                            filePath = WechatPackage.voicePath(resource);
+                            link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
+                            // 上传
+                            if (null == link) {
+                                chatRecord = null;
+                                break;
+                            }
+                            chatRecord.setContent(link);
                             break;
 
                         // 表情
@@ -104,7 +114,14 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 小视频mp4
                         case "43":
-                            chatRecord.setContent(WechatPackage.videoPath(resource));
+                            filePath = WechatPackage.videoPath(resource);
+                            link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
+                            // 上传
+                            if (null == link) {
+                                chatRecord = null;
+                                break;
+                            }
+                            chatRecord.setContent(link);
                             break;
 
                         // 分享
@@ -117,7 +134,9 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                             break;
                     }
                 }
-                chatRecordList.add(chatRecord);
+                if (null != chatRecord) {
+                    chatRecordList.add(chatRecord);
+                }
             }
             listener.successful(chatRecordList);
         } catch (SQLException e) {
@@ -126,6 +145,25 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         } finally {
             WechatDatabaseHelper.close(database, cursor);
         }
+    }
+
+    private String path2link(Context context, String path, String msgSvrId, String type) {
+        String link = this.readResourceLink(context, msgSvrId, type);
+        // 上传
+        if (null == link) {
+            DevLog.i("资源文件为空" + msgSvrId);
+            if (null != path) {
+                DevLog.i("开始上传" + msgSvrId);
+                link = this.uploadModel.uploadFile(path);
+                if (link != null) {
+                    // 更新本地
+                    this.saveResourceLink(context, msgSvrId, link, type);
+                }
+            }
+        } else {
+            DevLog.i("库存找到文件路径" + msgSvrId);
+        }
+        return link;
     }
 
     @Override
@@ -152,11 +190,14 @@ public class ChatRecordModelImpl implements ChatRecordModel {
             }
         }
         bigImgPath = WechatPackage.imagePath(bigImgPath);
+        if (!imgInfoCu.isClosed()) {
+            imgInfoCu.close();
+        }
         return bigImgPath;
     }
 
     @Override
-    public String resourceLink(Context context, String msgSvrId) {
+    public String readResourceLink(Context context, String msgSvrId, String type) {
         String link = null;
         DataBaseHelper dataBaseHelper = new DataBaseHelper(context, TN.DATABASE_NAME, null, AppCommon.getVersionCode(context));
         DatabaseManager databaseManager = DatabaseManager.getInstance(dataBaseHelper);
@@ -165,7 +206,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         //生成ContentValues对象，key:列名  value:想插入的值
         android.database.Cursor cursor = null;
         try {
-            cursor = readableDatabase.query(TN.MESSAGE_UPLOAD_RECORD, null, "msg_id=?", new String[]{msgSvrId}, null, null, null, null);
+            cursor = readableDatabase.query(TN.MESSAGE_UPLOAD_RECORD, null, "msg_id=? and type=?", new String[]{msgSvrId, type}, null, null, null, null);
             if (cursor.getCount() != 0) {
                 while (cursor.moveToNext()) {
                     link = cursor.getString(cursor.getColumnIndex("resource"));
@@ -179,5 +220,19 @@ public class ChatRecordModelImpl implements ChatRecordModel {
             databaseManager.closeDatabase();
         }
         return link;
+    }
+
+    @Override
+    public boolean saveResourceLink(Context context, String msgSvrId, String link, String type) {
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(context, TN.DATABASE_NAME, null, AppCommon.getVersionCode(context));
+        android.database.sqlite.SQLiteDatabase writableDatabase = dataBaseHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("msg_id", msgSvrId);
+        values.put("resource", link);
+        values.put("type", type);
+        writableDatabase.insert(TN.MESSAGE_UPLOAD_RECORD, null, values);
+        DataBaseHelper.closeDatabase(writableDatabase);
+        return true;
     }
 }

@@ -26,21 +26,27 @@ public class ChatRecordPresenter {
     }
 
     public void syncChatRecord() {
-
-        handler.post(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 chatRecordModel.getChatRecord(context, new OnGetChatRecordListener() {
                     @Override
-                    public void successful(List<ChatRecord> chatRecordList) {
+                    public void successful(final List<ChatRecord> chatRecordList) {
                         chatRecordModel.syncChatRecordMessage(context, chatRecordList);
+
                     }
 
                     @Override
                     public void fail() {
-                        analysisServiceView.getDataFail();
+                        //analysisServiceView.getDataFail();
                     }
                 });
+            }
+        }).start();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
             }
         });
     }

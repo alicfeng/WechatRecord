@@ -12,7 +12,7 @@ import com.samego.alic.monitor.wechat.wechatrecord.common.ResponseCode;
 import com.samego.alic.monitor.wechat.wechatrecord.configure.URI;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetContactListener;
-import com.samego.alic.monitor.wechat.wechatrecord.utils.OkHttpManager;
+import com.samego.alic.monitor.wechat.wechatrecord.helper.OkHttpManager;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 
 import net.sqlcipher.Cursor;

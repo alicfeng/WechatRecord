@@ -1,4 +1,4 @@
-package com.samego.alic.monitor.wechat.wechatrecord.utils;
+package com.samego.alic.monitor.wechat.wechatrecord.helper;
 
 import android.os.Environment;
 
@@ -50,6 +50,8 @@ public class OkHttpManager {
     public static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/*");
     // post请求json
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    // 表单文件上传
+    public static final MediaType MUTILPART_FORM_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
 
     /**
      * 构造方法
@@ -337,8 +339,8 @@ public class OkHttpManager {
      * @param file     file
      * @param callback callback
      */
-    public static void uploadFile(String url, File file, Callback callback) {
-        OkHttpManager.getInstance().doUploadFile(url, file, callback);
+    public static void uploadFileAsync(String url, File file, Callback callback) {
+        OkHttpManager.getInstance().doUploadFileAsync(url, file, callback);
     }
 
     /**
@@ -348,13 +350,60 @@ public class OkHttpManager {
      * @param file     file
      * @param callback callback
      */
-    private void doUploadFile(String url, File file, Callback callback) {
+    private void doUploadFileAsync(String url, File file, Callback callback) {
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, file))
                 .build();
 
         client.newCall(request).enqueue(callback);
+    }
+
+    //POST  仅上传一个文件 对结果处理
+
+    /**
+     * 上传一个文件 公开方法
+     *
+     * @param url   url
+     * @param files files
+     */
+    public static Response uploadFile(String url, Map<String, File> files) {
+        return OkHttpManager.getInstance().doUploadFile(url, files);
+    }
+
+    /**
+     * 上传一个文件 内部方法
+     *
+     * @param url   url
+     * @param files files
+     */
+    private Response doUploadFile(String url, Map<String, File> files) {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MUTILPART_FORM_DATA);
+
+        //处理提交的文件
+        if (files != null) {
+            //次句暂且解决params为null
+            builder.addFormDataPart("hidden", "debug");
+            for (String key : files.keySet()) {
+                //过滤 判断key是否为空
+                if (!key.equals("")) {
+                    builder.addFormDataPart(key, key, RequestBody.create(MEDIA_TYPE_PNG, files.get(key)));
+                }
+            }
+        }
+        MultipartBody body = builder.build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try {
+            return client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //表单提交(带文件) 动态参数 动态文件
