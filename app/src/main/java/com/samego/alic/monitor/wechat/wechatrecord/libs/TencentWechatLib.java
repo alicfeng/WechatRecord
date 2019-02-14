@@ -3,7 +3,9 @@ package com.samego.alic.monitor.wechat.wechatrecord.libs;
 import android.content.Context;
 
 import com.samego.alic.monitor.wechat.wechatrecord.utils.MD5Util;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.ShellUtil;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.SystemUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +23,27 @@ public class TencentWechatLib {
     private static final String DB_NAME = "EnMicroMsg.db";
     private static final String WX_FILE_PATH = "/storage/emulated/0/Tencent/Micromsg/";// 微信保存聊天时语音、图片、视频文件的地址
 
+
+    /**
+     * 初始化核心配置
+     *
+     * @param context 上下文
+     * @return true-ok false 处理失败
+     */
+    public static boolean initWechatConfigure(Context context) {
+        String imei = SystemUtil.imei(context);
+        String uid = TencentWechatLib.uid();
+        String dbPath = TencentWechatLib.getDBFilePath(context, uid);
+        if (null == imei || null == uid) {
+            return false;
+        }
+        String password = TencentWechatLib.password(imei, uid);
+        SharedPreferencesUtil.set(context, "wx_psd", password);
+        SharedPreferencesUtil.set(context, "wx_uid", uid);
+        SharedPreferencesUtil.set(context, "wx_db", dbPath);
+        SharedPreferencesUtil.set(context, "imei", imei);
+        return true;
+    }
 
     /**
      * 获取聊天数据库路径
