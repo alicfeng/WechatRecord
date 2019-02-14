@@ -2,6 +2,8 @@ package com.samego.alic.monitor.wechat.wechatrecord.helper;
 
 import android.os.Environment;
 
+import com.blankj.utilcode.util.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -388,7 +390,7 @@ public class OkHttpManager {
             for (String key : files.keySet()) {
                 //过滤 判断key是否为空
                 if (!key.equals("")) {
-                    builder.addFormDataPart(key, key, RequestBody.create(MEDIA_TYPE_PNG, files.get(key)));
+                    builder.addFormDataPart(key, FileUtils.getFileName(files.get(key)), RequestBody.create(MEDIA_TYPE_PNG, files.get(key)));
                 }
             }
         }

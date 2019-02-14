@@ -60,9 +60,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param cursor              cursor
      */
     public static void closeDatabase(SQLiteDatabase writeOrReadDatabase, Cursor cursor) {
-        if (cursor != null)
+        if (cursor != null && !cursor.isClosed())
             cursor.close();
-        if (writeOrReadDatabase != null)
+        if (writeOrReadDatabase != null && writeOrReadDatabase.isOpen())
             writeOrReadDatabase.close();
     }
 
@@ -72,7 +72,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param writeOrReadDatabase writeOrReadDatabase
      */
     public static void closeDatabase(SQLiteDatabase writeOrReadDatabase) {
-        if (writeOrReadDatabase != null)
+        if (writeOrReadDatabase != null && writeOrReadDatabase.isOpen())
             writeOrReadDatabase.close();
     }
 }

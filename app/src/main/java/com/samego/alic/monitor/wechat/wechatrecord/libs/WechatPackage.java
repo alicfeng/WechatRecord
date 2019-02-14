@@ -112,7 +112,7 @@ public class WechatPackage {
             return null;
         }
         try {
-            return WX_FILE_PATH + MD5Util.md5("mm" + uid()) + "/video/" + "/" + name + ".mp4";
+            return WX_FILE_PATH + MD5Util.md5("mm" + uid()) + "/video/"+ name + ".mp4";
         } catch (Exception e) {
             return null;
         }

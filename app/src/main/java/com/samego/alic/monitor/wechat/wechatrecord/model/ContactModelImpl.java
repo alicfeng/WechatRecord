@@ -34,13 +34,15 @@ import okhttp3.Response;
 public class ContactModelImpl implements ContactModel {
     @Override
     public void getContactList(Context context, OnGetContactListener listener) {
+        SQLiteDatabase database = null;
+        Cursor cursor = null;
         try {
-            SQLiteDatabase database = WechatDatabaseHelper.connect(context);
+            database = WechatDatabaseHelper.connect(context);
             List<Contact> contactList = new ArrayList<>();
             // verifyFlag!=0：公众号等类型 type=33：微信功能 type=2：未知 type=4：非好友
             // 一般公众号原始ID开头都是gh_
             // 群ID的结尾是@chatroom
-            Cursor cursor = database.rawQuery("select * from rcontact where " +
+            cursor = database.rawQuery("select * from rcontact where " +
                     "type != ? and " +
                     "type != ? and " +
                     "type != ? and " +
@@ -60,6 +62,8 @@ public class ContactModelImpl implements ContactModel {
         } catch (SQLException e) {
             Log.e("alicfeng", e.getMessage());
             listener.fail();
+        } finally {
+            WechatDatabaseHelper.close(database, cursor);
         }
     }
 
@@ -98,7 +102,7 @@ public class ContactModelImpl implements ContactModel {
         //post异步处理 结果是我的装备
         RequestBody requestBody = FormBody.create(OkHttpManager.MEDIA_TYPE_JSON, json);
         Log.i("alicfeng", json);
-        OkHttpManager.postEnqueueAsync(URI.URI_ACCOUNT_SYNC, requestBody, new Callback() {
+        OkHttpManager.postEnqueueAsync(URI.URI_CONTACT_SYNC, requestBody, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("alicfeng - onFailure", e.getMessage());
