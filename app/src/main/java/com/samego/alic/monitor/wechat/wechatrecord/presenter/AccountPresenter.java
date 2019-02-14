@@ -13,6 +13,9 @@ import com.samego.alic.monitor.wechat.wechatrecord.utils.NetWorkUtils;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView;
 
+/**
+ * 账号控制器AccountPresenter
+ */
 public class AccountPresenter {
     private Context context;
     private AccountModel accountModel;
@@ -26,6 +29,9 @@ public class AccountPresenter {
         this.analysisServiceView = analysisServiceView;
     }
 
+    /**
+     * 同步微信账号信息
+     */
     public void syncAccount() {
         String username = SharedPreferencesUtil.get(context, "username", null);
         // 本地还没同步则同步
@@ -36,9 +42,9 @@ public class AccountPresenter {
                     accountModel.getAccount(context, new OnGetAccountListener() {
                         @Override
                         public void successful(Account account) {
-                            if (NetWorkUtils.isNetworkConnected(context)){
+                            if (NetWorkUtils.isNetworkConnected(context)) {
                                 accountModel.syncAccountMessage(context, account);
-                            }else {
+                            } else {
                                 analysisServiceView.networkUnavailability();
                             }
                         }

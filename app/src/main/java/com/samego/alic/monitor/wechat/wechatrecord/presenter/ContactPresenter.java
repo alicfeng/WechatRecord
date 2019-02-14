@@ -13,6 +13,9 @@ import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView
 
 import java.util.List;
 
+/**
+ * 联系人控制器ContactPresenter
+ */
 public class ContactPresenter {
     private Context context;
     private ContactModel contactModel;
@@ -27,6 +30,9 @@ public class ContactPresenter {
         this.analysisServiceView = analysisServiceView;
     }
 
+    /**
+     * 同步上传联系人信息
+     */
     public void syncContactList() {
         handler.post(new Runnable() {
             @Override
@@ -34,12 +40,12 @@ public class ContactPresenter {
                 contactModel.getContactList(context, new OnGetContactListener() {
                     @Override
                     public void successful(List<Contact> contacts) {
-                        contactModel.syncContactMessage(context,contacts);
+                        contactModel.syncContactMessage(context, contacts);
                     }
 
                     @Override
                     public void fail() {
-                        Toast.makeText(context,"getContactList failed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "getContactList failed", Toast.LENGTH_SHORT).show();
                         analysisServiceView.getDataFail();
                     }
                 });

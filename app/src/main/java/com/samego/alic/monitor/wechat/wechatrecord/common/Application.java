@@ -3,7 +3,7 @@ package com.samego.alic.monitor.wechat.wechatrecord.common;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-public class AppCommon {
+public class Application {
     /**
      * 得到软件版本号
      *

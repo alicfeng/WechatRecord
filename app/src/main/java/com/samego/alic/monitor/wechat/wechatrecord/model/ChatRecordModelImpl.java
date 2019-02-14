@@ -9,15 +9,14 @@ import com.google.gson.reflect.TypeToken;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ChatRecord;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.RequestStructure;
 import com.samego.alic.monitor.wechat.wechatrecord.bean.ResponseStructure;
-import com.samego.alic.monitor.wechat.wechatrecord.common.AppCommon;
-import com.samego.alic.monitor.wechat.wechatrecord.common.AppCore;
+import com.samego.alic.monitor.wechat.wechatrecord.common.Application;
 import com.samego.alic.monitor.wechat.wechatrecord.common.ResponseCode;
-import com.samego.alic.monitor.wechat.wechatrecord.configure.TN;
+import com.samego.alic.monitor.wechat.wechatrecord.configure.ApplicationCfg;
 import com.samego.alic.monitor.wechat.wechatrecord.configure.URI;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.DataBaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.OkHttpManager;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
-import com.samego.alic.monitor.wechat.wechatrecord.libs.WechatPackage;
+import com.samego.alic.monitor.wechat.wechatrecord.libs.TencentWechatLib;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetChatRecordListener;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DatabaseManager;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
@@ -71,7 +70,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         try {
             database = WechatDatabaseHelper.connect(context);
             List<ChatRecord> chatRecordList = new ArrayList<>();
-            String[] binds = new String[]{"1", "3", "34", "47", "50", "43", "49", String.valueOf(AppCore.DATA_TIME)};
+            String[] binds = new String[]{"1", "3", "34", "47", "50", "43", "49", String.valueOf(ApplicationCfg.DATA_TIME)};
             cursor = database.rawQuery(
                     "select * from message where talker not like 'gh_%' and type in (?,?,?,?,?,?,?) and createTime>?;",
                     binds);
@@ -107,7 +106,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 语音
                         case "34":
-                            filePath = WechatPackage.voicePath(resource);
+                            filePath = TencentWechatLib.voicePath(resource);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -130,7 +129,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 小视频mp4
                         case "43":
-                            filePath = WechatPackage.videoPath(resource);
+                            filePath = TencentWechatLib.videoPath(resource);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -250,7 +249,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         //post异步处理 结果是我的装备
         RequestBody requestBody = FormBody.create(OkHttpManager.MEDIA_TYPE_JSON, json);
         Log.i("alicfeng", json);
-        OkHttpManager.postEnqueueAsync(URI.URI_CHATRECORD_SYNC, requestBody, new Callback() {
+        OkHttpManager.postEnqueueAsync(URI.URI_MESSAGE_SYNC, requestBody, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("alicfeng - onFailure", e.getMessage());
@@ -280,7 +279,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                 bigImgPath = imgInfoCu.getString(imgInfoCu.getColumnIndex("bigImgPath"));
             }
         }
-        bigImgPath = WechatPackage.imagePath(bigImgPath);
+        bigImgPath = TencentWechatLib.imagePath(bigImgPath);
         if (!imgInfoCu.isClosed()) {
             imgInfoCu.close();
         }
@@ -290,14 +289,14 @@ public class ChatRecordModelImpl implements ChatRecordModel {
     @Override
     public String readResourceLink(Context context, String msgSvrId, String type) {
         String link = null;
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(context, TN.DATABASE_NAME, null, AppCommon.getVersionCode(context));
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(context, DataBaseHelper.DB_NAME, null, Application.getVersionCode(context));
         DatabaseManager databaseManager = DatabaseManager.getInstance(dataBaseHelper);
         android.database.sqlite.SQLiteDatabase readableDatabase = dataBaseHelper.getReadableDatabase();
 
         //生成ContentValues对象，key:列名  value:想插入的值
         android.database.Cursor cursor = null;
         try {
-            cursor = readableDatabase.query(TN.MESSAGE_UPLOAD_RECORD, null, "msg_id=? and type=?", new String[]{msgSvrId, type}, null, null, null, null);
+            cursor = readableDatabase.query(DataBaseHelper.TABLE_MESSAGE_RESOURCE_RECORD, null, "msg_id=? and type=?", new String[]{msgSvrId, type}, null, null, null, null);
             if (cursor.getCount() != 0) {
                 while (cursor.moveToNext()) {
                     link = cursor.getString(cursor.getColumnIndex("resource"));
@@ -315,14 +314,14 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
     @Override
     public boolean saveResourceLink(Context context, String msgSvrId, String link, String type) {
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(context, TN.DATABASE_NAME, null, AppCommon.getVersionCode(context));
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(context, DataBaseHelper.DB_NAME, null, Application.getVersionCode(context));
         android.database.sqlite.SQLiteDatabase writableDatabase = dataBaseHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put("msg_id", msgSvrId);
         values.put("resource", link);
         values.put("type", type);
-        writableDatabase.insert(TN.MESSAGE_UPLOAD_RECORD, null, values);
+        writableDatabase.insert(DataBaseHelper.TABLE_MESSAGE_RESOURCE_RECORD, null, values);
         DataBaseHelper.closeDatabase(writableDatabase);
         return true;
     }

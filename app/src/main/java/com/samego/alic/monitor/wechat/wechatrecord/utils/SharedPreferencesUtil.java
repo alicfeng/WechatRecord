@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.samego.alic.monitor.wechat.wechatrecord.service.AnalysisService;
+import com.samego.alic.monitor.wechat.wechatrecord.service.CoreService;
 
 public class SharedPreferencesUtil {
-    private AnalysisService analysisService = null;
+    private CoreService analysisService = null;
 
     /**
      * 储存

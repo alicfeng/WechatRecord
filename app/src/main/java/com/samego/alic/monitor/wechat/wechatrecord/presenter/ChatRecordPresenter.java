@@ -12,6 +12,9 @@ import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView
 
 import java.util.List;
 
+/**
+ * 聊天记录控制器ChatRecordPresenter
+ */
 public class ChatRecordPresenter {
     private Context context;
     private ChatRecordModel chatRecordModel;
@@ -25,6 +28,9 @@ public class ChatRecordPresenter {
         this.analysisServiceView = analysisServiceView;
     }
 
+    /**
+     * 同步上传聊天记录
+     */
     public void syncChatRecord() {
         new Thread(new Runnable() {
             @Override

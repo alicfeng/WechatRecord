@@ -74,7 +74,7 @@ public class AccountModelImpl implements AccountModel {
         //post异步处理 结果是我的装备
         RequestBody requestBody = FormBody.create(OkHttpManager.MEDIA_TYPE_JSON, json);
         Log.i("alicfeng", json);
-        OkHttpManager.postEnqueueAsync(URI.URI_ACCOUNT_SYNC, requestBody, new Callback() {
+        OkHttpManager.postEnqueueAsync(URI.URI_MESSAGE_SYNC, requestBody, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("alicfeng - onFailure", e.getMessage());

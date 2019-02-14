@@ -6,11 +6,17 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.samego.alic.monitor.wechat.wechatrecord.configure.TN;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
 
-
+/**
+ * 数据库SQLite Helper
+ */
 public class DataBaseHelper extends SQLiteOpenHelper {
+    // 数据库名称 samegoChat
+    public static final String DB_NAME = "samegoChat";
+
+    // 聊天记录上传记录表
+    public static final String TABLE_MESSAGE_RESOURCE_RECORD = "message_resource_record";
 
     public DataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -22,7 +28,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TN.MESSAGE_UPLOAD_RECORD + "(" +
+        db.execSQL("CREATE TABLE " + DataBaseHelper.TABLE_MESSAGE_RESOURCE_RECORD + "(" +
                 "id INTEGER NOT NULL PRIMARY KEY," +
                 "type INTEGER," +
                 "msg_id VARCHAR(32)," +
@@ -45,12 +51,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param cursor        cursor
      */
     public static void closeDatabase(SQLiteDatabase writeDatabase, SQLiteDatabase readDatabase, Cursor cursor) {
-        if (cursor != null)
+        if (cursor != null) {
             cursor.close();
-        if (writeDatabase != null)
+        }
+        if (writeDatabase != null) {
             writeDatabase.close();
-        if (readDatabase != null)
+        }
+        if (readDatabase != null) {
             readDatabase.close();
+        }
     }
 
     /**
@@ -60,10 +69,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param cursor              cursor
      */
     public static void closeDatabase(SQLiteDatabase writeOrReadDatabase, Cursor cursor) {
-        if (cursor != null && !cursor.isClosed())
+        if (cursor != null && !cursor.isClosed()) {
             cursor.close();
-        if (writeOrReadDatabase != null && writeOrReadDatabase.isOpen())
+        }
+        if (writeOrReadDatabase != null && writeOrReadDatabase.isOpen()) {
             writeOrReadDatabase.close();
+        }
     }
 
     /**
@@ -72,8 +83,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param writeOrReadDatabase writeOrReadDatabase
      */
     public static void closeDatabase(SQLiteDatabase writeOrReadDatabase) {
-        if (writeOrReadDatabase != null && writeOrReadDatabase.isOpen())
+        if (writeOrReadDatabase != null && writeOrReadDatabase.isOpen()) {
             writeOrReadDatabase.close();
+        }
     }
 }
 

@@ -20,8 +20,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * oKHttp的工具类
- * Created by alic on 16-5-20.
+ * oKHttp的容器管理
  */
 public class OkHttpManager {
     /**

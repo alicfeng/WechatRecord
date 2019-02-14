@@ -6,9 +6,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * shell工具类
+ */
 public class ShellUtil {
+    /**
+     * 执行cli command
+     *
+     * @param command String cmd
+     * @return boolean
+     */
     public static boolean command(String command) {
-
         Process process = null;
         DataOutputStream os = null;
 

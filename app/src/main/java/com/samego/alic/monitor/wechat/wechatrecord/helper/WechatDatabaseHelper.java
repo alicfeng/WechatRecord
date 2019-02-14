@@ -9,6 +9,9 @@ import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 
+/**
+ * 微信数据库sqlite助手
+ */
 public class WechatDatabaseHelper {
     public static SQLiteDatabase connect(Context context) throws SQLException {
         SQLiteDatabase.loadLibs(context);

@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-public class WechatPackage {
+public class TencentWechatLib {
     private static final String PACKAGE_PATH = "/data/data/com.tencent.mm/";
     // auth_info_key_prefs.xml文件路径
     private static final String AUTH_INFO_PATH = "/data/data/com.tencent.mm/shared_prefs/auth_info_key_prefs.xml";
