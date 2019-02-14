@@ -5,8 +5,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 
-import com.samego.alic.monitor.wechat.wechatrecord.service.CoreService;
-
 import java.util.ArrayList;
 
 public class SystemUtil {
