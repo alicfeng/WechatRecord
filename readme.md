@@ -55,7 +55,7 @@ No matter where I am, I will reply you immediately when I see the email.My Email
 
   ```java
   # 路径为
-  "/data/data/com.tencent.mm/MicroMsg/" + md5("mm" + uin + "/EnMicroMsg.db";
+  "/data/data/com.tencent.mm/MicroMsg/" + md5("mm" + uin) + "/EnMicroMsg.db";
   ```
 
   
