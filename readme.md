@@ -28,7 +28,7 @@ No matter where I am, I will reply you immediately when I see the email.My Email
 
   
 
-- `imei码`
+- **`imei码`**
 
   > 移动设备的唯一编码，双卡双待的会有两个。与数据库秘钥息息相关。
 
@@ -51,7 +51,7 @@ No matter where I am, I will reply you immediately when I see the email.My Email
 
 
 
-- **数据路`EnMicroMsg.db`路径 **
+- **数据库路径 **
 
   ```java
   # 路径为
