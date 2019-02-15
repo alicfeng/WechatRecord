@@ -2,6 +2,7 @@ package com.samego.alic.monitor.wechat.wechatrecord.model;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -70,7 +71,8 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         try {
             database = WechatDatabaseHelper.connect(context);
             List<ChatRecord> chatRecordList = new ArrayList<>();
-            String[] binds = new String[]{"1", "3", "34", "47", "50", "43", "49", String.valueOf(ApplicationCfg.DATA_TIME)};
+            String createTime = String.valueOf(System.currentTimeMillis() - ApplicationCfg.DATA_TIME);
+            String[] binds = new String[]{"1", "3", "34", "47", "50", "43", "49", createTime};
             cursor = database.rawQuery(
                     "select * from message where talker not like 'gh_%' and type in (?,?,?,?,?,?,?) and createTime>?;",
                     binds);
@@ -324,5 +326,9 @@ public class ChatRecordModelImpl implements ChatRecordModel {
         writableDatabase.insert(DataBaseHelper.TABLE_MESSAGE_RESOURCE_RECORD, null, values);
         DataBaseHelper.closeDatabase(writableDatabase);
         return true;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(String.valueOf(System.currentTimeMillis() - ApplicationCfg.DATA_TIME));
     }
 }

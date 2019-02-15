@@ -52,7 +52,7 @@ public class TencentWechatLib {
      * @param uid     uid
      * @return String
      */
-    public static String getDBFilePath(Context context, String uid) {
+    private static String getDBFilePath(Context context, String uid) {
         return PACKAGE_PATH + "MicroMsg/" + MD5Util.md5("mm" + uid) + "/" + DB_NAME;
     }
 
@@ -62,7 +62,7 @@ public class TencentWechatLib {
      *
      * @return 微信的uid
      */
-    public static String uid() {
+    private static String uid() {
         ShellUtil.command("chmod -R 777 " + AUTH_INFO_PATH);
         Document document = null;
         String uid = null;
@@ -87,7 +87,7 @@ public class TencentWechatLib {
      * @param uid  微信的uid
      * @return 本地数据路的密码
      */
-    public static String password(String imei, String uid) {
+    private static String password(String imei, String uid) {
         return (Objects.requireNonNull(MD5Util.md5(imei + uid))).substring(0, 7).toLowerCase();
     }
 

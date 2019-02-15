@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void init() {
         serviceStatus = findViewById(R.id.serviceStatus);
         serviceStatus.setOnClickListener(this);
-        StatusBarCompat.displayStatusBar(this);
         this.intent = new Intent(this, CoreService.class);
         this.checkCoreService();
         if (!ShellUtil.isRoot()) {

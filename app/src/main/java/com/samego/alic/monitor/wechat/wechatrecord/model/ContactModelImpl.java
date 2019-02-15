@@ -57,7 +57,6 @@ public class ContactModelImpl implements ContactModel {
                 contact.setType(cursor.getString(cursor.getColumnIndex("type")));
                 contactList.add(contact);
             }
-            WechatDatabaseHelper.close(database, cursor);
             listener.successful(contactList);
         } catch (SQLException e) {
             Log.e("alicfeng", e.getMessage());

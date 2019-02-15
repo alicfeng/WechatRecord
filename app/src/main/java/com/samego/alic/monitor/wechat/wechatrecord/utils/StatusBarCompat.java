@@ -24,7 +24,7 @@ public class StatusBarCompat {
     public static final int COLOR_ToolBar_WHITE = Color.parseColor("#FFFFFFFF");
     public static final int COLOR_ToolBar_HIGHTBLUE = Color.parseColor("#ff5ABEDC");
     public static final int COLOR_ToolBar_BLUE = Color.parseColor("#3F51B5");
-    public static final int COLOR_ToolBar_DEFAULT_PINK = Color.parseColor("#FFEF4968");
+    public static final int COLOR_ToolBar_DEFAULT_PINK = Color.parseColor("#008577");
 
     /**
      * 设置状态栏的颜色  默认颜色
@@ -54,7 +54,6 @@ public class StatusBarCompat {
     public static void setStatusBarColor(Activity activity, int statusColor) {
         Window window = activity.getWindow();
         ViewGroup mContentView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
-
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             //First translucent status bar.
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

@@ -3,7 +3,9 @@ package com.samego.alic.monitor.wechat.wechatrecord.utils;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;import android.telephony.TelephonyManager;
+import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
+
 /**
  * 网络工具类
  * Created by alic on 16-4-8.
@@ -12,8 +14,8 @@ public class NetWorkUtils {
     /**
      * 判断是否有网络连接
      *
-     * @param context
-     * @return
+     * @param context 上下文
+     * @return boolean
      */
     public static boolean isNetworkConnected(Context context) {
         if (context != null) {
@@ -27,26 +29,11 @@ public class NetWorkUtils {
         }
         return false;
     }
+
     /**
      * 判断WIFI网络是否可用
      *
      * @param context
-     * @return
-    /
-    public static boolean isWifiConnected(Context context) {
-    if (context != null) {
-    // 获取手机所有连接管理对象(包括对wi-fi,net等连接的管理)
-    ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    // 获取NetworkInfo对象
-    NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-    //判断NetworkInfo对象是否为空 并且类型是否为WIFI
-    if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
-    return networkInfo.isAvailable();
-    }        return false;
-    }
-    /**
-     * 判断MOBILE网络是否可用
-     *
      * @param context
      * @return
      */
@@ -62,13 +49,15 @@ public class NetWorkUtils {
         }
         return false;
     }
+
     /**
      * 获取当前网络连接的类型信息
      * 原生
      *
      * @param context
      * @return
-     */    public static int getConnectedType(Context context) {
+     */
+    public static int getConnectedType(Context context) {
         if (context != null) {
             //获取手机所有连接管理对象
             ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -81,6 +70,7 @@ public class NetWorkUtils {
         }
         return -1;
     }
+
     /**
      * 获取当前的网络状态 ：没有网络-0：WIFI网络1：4G网络-4：3G网络-3：2G网络-2
      * 自定义
@@ -128,9 +118,11 @@ public class NetWorkUtils {
         }
         return netType;
     }
+
     /**
      * 判断GPS是否打开
-     *ACCESS_FINE_LOCATION权限
+     * ACCESS_FINE_LOCATION权限
+     *
      * @param context
      * @return
      */

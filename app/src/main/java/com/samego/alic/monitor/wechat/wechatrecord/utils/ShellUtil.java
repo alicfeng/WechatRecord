@@ -1,5 +1,7 @@
 package com.samego.alic.monitor.wechat.wechatrecord.utils;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -14,9 +16,8 @@ public class ShellUtil {
      * 执行cli command
      *
      * @param command String cmd
-     * @return boolean
      */
-    public static boolean command(String command) {
+    public static void command(String command) {
         Process process = null;
         DataOutputStream os = null;
 
@@ -28,7 +29,7 @@ public class ShellUtil {
             os.flush();
             process.waitFor();
         } catch (Exception e) {
-            return false;
+            e.printStackTrace();
         } finally {
             if (os != null) {
                 try {
@@ -41,7 +42,6 @@ public class ShellUtil {
                 process.destroy();
             }
         }
-        return true;
     }
 
     //判断手机是否root
@@ -52,10 +52,7 @@ public class ShellUtil {
         if (new File(binPath).exists() && isCanExecute(binPath)) {
             return true;
         }
-        if (new File(xBinPath).exists() && isCanExecute(xBinPath)) {
-            return true;
-        }
-        return false;
+        return new File(xBinPath).exists() && isCanExecute(xBinPath);
     }
 
     private static boolean isCanExecute(String filePath) {
