@@ -2,13 +2,9 @@ package com.samego.alic.monitor.wechat.wechatrecord.view.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +12,7 @@ import android.widget.Toast;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 import com.samego.alic.monitor.wechat.wechatrecord.R;
+import com.samego.alic.monitor.wechat.wechatrecord.common.Application;
 import com.samego.alic.monitor.wechat.wechatrecord.libs.TencentWechatLib;
 import com.samego.alic.monitor.wechat.wechatrecord.service.CoreService;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
@@ -29,21 +26,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Intent intent;
     private TextView serviceStatus;
 
-    private final static int REQUEST_PHONE_STATE = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        String[] permissions = new String[]{
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.INTERNET,
-                Manifest.permission.RECEIVE_BOOT_COMPLETED,
-        };
 
         PermissionsUtil.requestPermission(this, new PermissionListener() {
             @Override
@@ -55,21 +41,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void permissionDenied(@NonNull String[] permission) {
                 DevLog.i("permissionDenied");
             }
-        },permissions);
-
-//        for (String str:permissions){
-//            if(checkSelfPermission(str)!=PackageManager.PERMISSION_GRANTED){
-//                DevLog.i("申请中" + str);
-//                requestPermissions(new String[]{str}, 1);
-//            }else {
-//                DevLog.i("已经申请了" + str);
-//            }
-//        }
-
+        }, Application.permissions());
 
         this.init();
         // 加载微信配置
-        if (TencentWechatLib.initWechatConfigure(this,this)) {
+        if (TencentWechatLib.initWechatConfigure(this)) {
             String password = SharedPreferencesUtil.get(this, "wx_psd", null);
             Toast.makeText(this, password, Toast.LENGTH_LONG).show();
             this.startCoreService();
@@ -118,12 +94,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == REQUEST_PHONE_STATE && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            Toast.makeText(this,SystemUtil.imei(this),Toast.LENGTH_LONG).show();
-//        }
-//    }
 }

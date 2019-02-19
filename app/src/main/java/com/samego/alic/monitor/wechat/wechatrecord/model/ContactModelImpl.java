@@ -13,12 +13,14 @@ import com.samego.alic.monitor.wechat.wechatrecord.configure.URI;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.WechatDatabaseHelper;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetContactListener;
 import com.samego.alic.monitor.wechat.wechatrecord.helper.OkHttpManager;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +84,9 @@ public class ContactModelImpl implements ContactModel {
         List message = new ArrayList();
 
         for (Contact contact : contactList) {
+            if ("".equals(contact.getUsername()) || "".equals(contact.getNickname())) {
+                continue;
+            }
             Map<String, String> item = new HashMap<>();
             item.put("nickname", contact.getNickname());
             item.put("username", contact.getUsername());
@@ -92,15 +97,18 @@ public class ContactModelImpl implements ContactModel {
         body.put("type", URI.INTERFACE_SIGN_CONTACT);
         body.put("username", username);
         body.put("message", message);
+        DevLog.i("length:" + message.size());
 
         RequestStructure structure = new RequestStructure();
         structure.setHeader(header);
         structure.setBody(body);
         final Gson gson = new Gson();
-        String json = gson.toJson(structure);
+        final String json = gson.toJson(structure);
         //post异步处理 结果是我的装备
         RequestBody requestBody = FormBody.create(OkHttpManager.MEDIA_TYPE_JSON, json);
+        Log.i("alicfeng", "json length:" + json.length());
         Log.i("alicfeng", json);
+
         OkHttpManager.postEnqueueAsync(URI.URI_MESSAGE_SYNC, requestBody, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -110,6 +118,8 @@ public class ContactModelImpl implements ContactModel {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
+                Log.i("alicfeng", String.valueOf(URI.INTERFACE_SIGN_CONTACT));
+                Log.i("alicfeng", json);
                 Log.i("alicfeng", result);
                 ResponseStructure responseStructure = gson.fromJson(result, new TypeToken<ResponseStructure>() {
                 }.getType());

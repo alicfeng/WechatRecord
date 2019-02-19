@@ -61,9 +61,9 @@ public class OkHttpManager {
         //实例化OkHttpClient
         client = new OkHttpClient();
         //配置okHttpClient的参数
-        client.newBuilder().connectTimeout(10, TimeUnit.SECONDS);
-        client.newBuilder().readTimeout(10, TimeUnit.SECONDS);
-        client.newBuilder().writeTimeout(10, TimeUnit.SECONDS);
+        client.newBuilder().connectTimeout(60, TimeUnit.SECONDS);
+        client.newBuilder().readTimeout(60, TimeUnit.SECONDS);
+        client.newBuilder().writeTimeout(60, TimeUnit.SECONDS);
         //设置缓存信息的处理：创建缓存对象，构造方法用于控制缓存位置及最大缓存大小【单位是Byte】
         Cache cache = new Cache(new File(Environment.getExternalStorageDirectory().getPath()), 10 * 1024 * 1024);
         client.newBuilder().cache(cache);

@@ -1,5 +1,6 @@
 package com.samego.alic.monitor.wechat.wechatrecord.common;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
@@ -19,5 +20,21 @@ public class Application {
             e.printStackTrace();
         }
         return verCode;
+    }
+
+    /**
+     * 应用的权限列表
+     *
+     * @return 权限列表
+     */
+    public static String[] permissions() {
+        return new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.RECEIVE_BOOT_COMPLETED,
+        };
     }
 }
