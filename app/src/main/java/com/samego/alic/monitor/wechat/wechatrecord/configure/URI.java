@@ -2,7 +2,7 @@ package com.samego.alic.monitor.wechat.wechatrecord.configure;
 
 public class URI {
     // 基础域
-    private static final String BASE_DOMAIN = "http://192.168.2.119:8081";
+    private static final String BASE_DOMAIN = "";
 
     // 账号数据同步URI | 联系人信息同步URI | 聊天记录信息同步URI
     public static final String URI_MESSAGE_SYNC = BASE_DOMAIN + "/platform/chatRecord/sync";

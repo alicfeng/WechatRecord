@@ -34,7 +34,7 @@ public interface ChatRecordModel {
      * @param msgSvrId msgSvrId
      * @return String 图片文件信息
      */
-    String imagePath(SQLiteDatabase database, String msgSvrId);
+    String imagePath(SQLiteDatabase database, Context context, String msgSvrId);
 
     /**
      * 获取资源文件对应的地址

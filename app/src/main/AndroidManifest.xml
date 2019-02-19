@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.samego.alic.monitor.wechat.wechatrecord">
 
-    <!--读取手机文件权限-->
+    <!--手机网络权限-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--读取手机文件权限-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <!--手机网络权限-->
+
     <uses-permission android:name="android.permission.INTERNET" />
     <!--手机自启权限-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

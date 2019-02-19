@@ -96,7 +96,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                     switch (chatRecord.getType()) {
                         // 图片
                         case "3":
-                            filePath = imagePath(database, chatRecord.getMsgSvrId());
+                            filePath = imagePath(database, context, chatRecord.getMsgSvrId());
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -108,7 +108,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 语音
                         case "34":
-                            filePath = TencentWechatLib.voicePath(resource);
+                            filePath = TencentWechatLib.voicePath(context,resource);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -131,7 +131,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 小视频mp4
                         case "43":
-                            filePath = TencentWechatLib.videoPath(resource);
+                            filePath = TencentWechatLib.videoPath(context,resource);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -271,7 +271,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
     }
 
     @Override
-    public String imagePath(SQLiteDatabase database, String msgSvrId) {
+    public String imagePath(SQLiteDatabase database, Context context, String msgSvrId) {
         String bigImgPath = "";
         Cursor imgInfoCu = database.rawQuery(
                 "select bigImgPath,msgSvrId from ImgInfo2 where msgSvrId=?;",
@@ -281,7 +281,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
                 bigImgPath = imgInfoCu.getString(imgInfoCu.getColumnIndex("bigImgPath"));
             }
         }
-        bigImgPath = TencentWechatLib.imagePath(bigImgPath);
+        bigImgPath = TencentWechatLib.imagePath(context, bigImgPath);
         if (!imgInfoCu.isClosed()) {
             imgInfoCu.close();
         }
