@@ -108,7 +108,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 语音
                         case "34":
-                            filePath = TencentWechatLib.voicePath(context,resource);
+                            filePath = TencentWechatLib.voicePath(context, resource);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -131,7 +131,7 @@ public class ChatRecordModelImpl implements ChatRecordModel {
 
                         // 小视频mp4
                         case "43":
-                            filePath = TencentWechatLib.videoPath(context,resource);
+                            filePath = TencentWechatLib.videoPath(context, resource);
                             link = this.path2link(context, filePath, chatRecord.getMsgSvrId(), chatRecord.getType());
                             // 上传
                             if (null == link) {
@@ -230,12 +230,12 @@ public class ChatRecordModelImpl implements ChatRecordModel {
             item.put("create_time", chatRecord.getCreateTime());
             message.add(item);
 
-            Log.i("alicfeng", "MsgSvrId - " + chatRecord.getMsgSvrId());
-            Log.i("alicfeng", "IsSend - " + chatRecord.getIsSend());
+            // Log.i("alicfeng", "MsgSvrId - " + chatRecord.getMsgSvrId());
+//            Log.i("alicfeng", "IsSend - " + chatRecord.getIsSend());
             Log.i("alicfeng", "Content - " + chatRecord.getContent());
-            Log.i("alicfeng", "Type - " + chatRecord.getType());
-            Log.i("alicfeng", "Talker - " + chatRecord.getTalker());
-            Log.i("alicfeng", "CreateTime - " + chatRecord.getCreateTime());
+//            Log.i("alicfeng", "Type - " + chatRecord.getType());
+//            Log.i("alicfeng", "Talker - " + chatRecord.getTalker());
+//            Log.i("alicfeng", "CreateTime - " + chatRecord.getCreateTime());
         }
 
         body.put("type", URI.INTERFACE_SIGN_CHATRECORD);

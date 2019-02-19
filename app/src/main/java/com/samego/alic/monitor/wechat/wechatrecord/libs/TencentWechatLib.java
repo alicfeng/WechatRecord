@@ -2,7 +2,6 @@ package com.samego.alic.monitor.wechat.wechatrecord.libs;
 
 import android.content.Context;
 
-import com.blankj.utilcode.util.FileUtils;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.MD5Util;
 import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
@@ -66,7 +65,7 @@ public class TencentWechatLib {
      * @return 微信的uid
      */
     private static String uid() {
-        ShellUtil.command("chmod -R 777 " + FileUtils.getDirName(AUTH_INFO_PATH));
+        ShellUtil.command("chmod -R 777 /data/data/com.tencent.mm/shared_prefs/");
         ShellUtil.command("chmod -R 777 " + AUTH_INFO_PATH);
         Document document = null;
         String uid = null;

@@ -33,9 +33,9 @@ public class AccountPresenter {
      * 同步微信账号信息
      */
     public void syncAccount() {
-        String username = SharedPreferencesUtil.get(context, "username", null);
+        final String username = SharedPreferencesUtil.get(context, "username", null);
         // 本地还没同步则同步
-        if (null == username) {
+//        if (null == username) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -44,6 +44,7 @@ public class AccountPresenter {
                         public void successful(Account account) {
                             if (NetWorkUtils.isNetworkConnected(context)) {
                                 accountModel.syncAccountMessage(context, account);
+                                Log.i("alicfeng", "账号信息已经同步 | " + username);
                             } else {
                                 analysisServiceView.networkUnavailability();
                             }
@@ -56,8 +57,8 @@ public class AccountPresenter {
                     });
                 }
             });
-        } else {
-            Log.i("alicfeng", "账号信息已经同步 | break");
-        }
+//        } else {
+//            Log.i("alicfeng", "账号信息已经同步 | " + username);
+//        }
     }
 }
