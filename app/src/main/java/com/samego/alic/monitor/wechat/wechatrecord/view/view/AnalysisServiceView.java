@@ -20,4 +20,15 @@ public interface AnalysisServiceView {
      * 获取数据异常
      */
     void getDataFail();
+
+    /**
+     * 获取电源锁
+     */
+    void acquireWakeLock();
+
+
+    /**
+     * 释放设备电源锁
+     */
+    void releaseWakeLock();
 }

@@ -35,6 +35,7 @@ public class Application {
                 Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.RECEIVE_BOOT_COMPLETED,
+                Manifest.permission.WAKE_LOCK,
         };
     }
 }

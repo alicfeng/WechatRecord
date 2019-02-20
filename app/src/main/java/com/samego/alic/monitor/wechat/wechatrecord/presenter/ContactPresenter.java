@@ -6,9 +6,12 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.samego.alic.monitor.wechat.wechatrecord.bean.Contact;
+import com.samego.alic.monitor.wechat.wechatrecord.common.Constant;
 import com.samego.alic.monitor.wechat.wechatrecord.model.ContactModel;
 import com.samego.alic.monitor.wechat.wechatrecord.model.ContactModelImpl;
 import com.samego.alic.monitor.wechat.wechatrecord.model.listener.OnGetContactListener;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.DevLog;
+import com.samego.alic.monitor.wechat.wechatrecord.utils.SharedPreferencesUtil;
 import com.samego.alic.monitor.wechat.wechatrecord.view.view.AnalysisServiceView;
 
 import java.util.List;
@@ -40,7 +43,13 @@ public class ContactPresenter {
                 contactModel.getContactList(context, new OnGetContactListener() {
                     @Override
                     public void successful(List<Contact> contacts) {
-                        contactModel.syncContactMessage(context, contacts);
+                        String contact_num = SharedPreferencesUtil.get(context, Constant.SP_KEY_CONTACT_NUMBER, null);
+                        if (null == contact_num || Integer.parseInt(contact_num) != contacts.size()) {
+                            SharedPreferencesUtil.set(context, Constant.SP_KEY_CONTACT_NUMBER, String.valueOf(contacts.size()));
+                            contactModel.syncContactMessage(context, contacts);
+                        } else {
+                            DevLog.i("联系人没有变化，不需要同步");
+                        }
                     }
 
                     @Override
@@ -51,5 +60,12 @@ public class ContactPresenter {
                 });
             }
         });
+    }
+
+    public static void main(String[] args) {
+        String a=null;
+        if(null==a || Integer.parseInt(a)==1){
+            System.out.println("Fff");
+        }
     }
 }
